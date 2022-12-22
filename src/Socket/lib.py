@@ -1,6 +1,11 @@
 from socket import *
 HTTP_VERSION = "HTTP/1.1"
-
+response_strings = {
+    200: "200 OK",
+    401: "401 Unauthorized",
+    403: "403 Forbidden",
+    404: "404 Not Found"
+}
 class Socket:
     def __init__(self, address = "0.0.0.0", port = 8000,) -> None:
         self.serverSocket = socket(AF_INET,SOCK_STREAM)
@@ -26,17 +31,11 @@ class Socket:
             """).encode_current_response().send_response(connection_socket)
 
     def initialize_response(self, status):
-        match status:
-            case 200:
-                self.current_response = HTTP_VERSION + " 200 OK"
-            case 401:
-                self.current_response = HTTP_VERSION + " 401 Unauthorized"
-            case 403:
-                self.current_response = HTTP_VERSION + " 403 Forbidden"
-            case 404:
-                self.current_response = HTTP_VERSION + " 404 NOT FOUND"
-            case _:
-                self.current_response = "-1 INVALID STATUS CODE"
+        response_string = response_strings[status]
+        if response_string == None:
+            self.current_response += "-1 Invalid Status Code"
+        else:
+            self.current_response += f"{HTTP_VERSION}  {response_string}"
         self.current_response += "\n"
         return self
 
@@ -55,3 +54,4 @@ class Socket:
     def send_response(self, connection_socket):
         connection_socket.sendall(self.current_response)
         connection_socket.close()
+        self.current_response = ""
