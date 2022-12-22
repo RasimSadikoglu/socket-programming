@@ -1,4 +1,5 @@
 from socket import *
+from threading import Thread, Semaphore
 HTTP_VERSION = "HTTP/1.1"
 response_strings = {
     200: "200 OK",
@@ -6,29 +7,44 @@ response_strings = {
     403: "403 Forbidden",
     404: "404 Not Found"
 }
+
+semaphore = Semaphore(8)
 class Socket:
-    def __init__(self, address = "0.0.0.0", port = 8000,) -> None:
+
+    __endpoints: dict
+    __current_response: str
+
+    def __init__(self, endpoints, address = "0.0.0.0", port = 8000) -> None:
         self.serverSocket = socket(AF_INET,SOCK_STREAM)
         self.serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.serverSocket.bind((address, port))
         self.serverSocket.listen(1)
         self.HTTP_VERSION = "HTTP/1.1"
         self.current_response = ""
+        self.__endpoints = endpoints
         print('The server is ready to receive')
 
     def start_listening(self):
+        count = 0
         while True:
             connection_socket, addr = self.serverSocket.accept()
             decoded_message = connection_socket.recv(1024).decode()
-            self.initialize_response(200).add_response_header("Content-Type", "text/html").add_response_body("""
-<!DOCTYPE html>
-<HTML>
-<HEAD>
-<TITLE>Room Added</TITLE>
-</HEAD>
-<BODY>Room with name M2Z08 is successfully added.</BODY>
-</HTML>     
-            """).encode_current_response().send_response(connection_socket)
+
+            endpoint, query = decoded_message.split()[1].split('?', 1)
+            args = dict(arg.split('=') for arg in query.split('&'))
+            args['socket'] = connection_socket
+            args['semaphore'] = thread_exit
+
+            self.initialize_response(200).add_response_header("Content-Type", "text/html").add_response_body(f"""{count}\n""").encode_current_response()
+            count += 1
+            args['response'] = self.current_response
+            self.current_response = ""
+            
+            print(semaphore._value)
+            semaphore.acquire()
+            x = Thread(target=self.__endpoints[endpoint], args=args.values())
+            x.start()
+
 
     def initialize_response(self, status):
         response_string = response_strings[status]
@@ -55,3 +71,7 @@ class Socket:
         connection_socket.sendall(self.current_response)
         connection_socket.close()
         self.current_response = ""
+
+
+def thread_exit():
+    semaphore.release()
