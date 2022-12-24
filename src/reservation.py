@@ -1,19 +1,30 @@
 from lib.socket import Socket
+from lib.controller import Controller
 from socket import *
 
-def reserve(room: str, activity: str, day: int, hour: int, duration: int):
-    pass
+class Reservation(Controller):
 
-def list_availability(room: str, day: int = 0):
-    pass
+    def __init__(self, socket, endpoint, args):
+        super().__init__(socket)
 
-def display(id: int):
-    pass
+        endpoints = {
+            '/reserve': self.reserve,
+            '/listavailability': self.list_availability,
+            '/display': self.display
+        }
 
-endpoints = {
-    '/reserve': reserve,
-    '/listavailability': list_availability,
-    '/display': display
-}
+        endpoints[endpoint](**args)
 
-Socket(endpoints, '0.0.0.0', 8000).start_listening()
+        self.exit()
+
+    def reserve(room: str, activity: str, day: int, hour: int, duration: int):
+        pass
+
+    def list_availability(room: str, day: int = 0):
+        pass
+
+    def display(id: int):
+        pass
+
+
+Socket(lambda socket, endpoint, args: Reservation(socket, endpoint, args), '0.0.0.0', 8000).start_listening()

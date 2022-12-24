@@ -1,19 +1,34 @@
 from lib.socket import Socket
+from lib.controller import Controller
 from socket import *
 
-def add(name: str):
-    pass
+class Activity(Controller):
 
-def remove(name: str):
-    pass
+    def __init__(self, socket, endpoint, args):
+        super().__init__(socket)
 
-def check(name: str):
-    pass
+        endpoints = {
+            '/add': self.add,
+            '/remove': self.remove,
+            '/check': self.check
+        }
 
-endpoints = {
-    '/add': add,
-    '/remove': remove,
-    '/check': check
-}
+        endpoints[endpoint](**args)
 
-Socket(endpoints, '0.0.0.0', 8001).start_listening()
+        self.exit()
+
+    def add(self, name: str):
+        self.initialize_response(200) \
+            .add_header('Content-Type', 'text/html') \
+            .add_body(f'Hello, {name}!\n') \
+            .encode() \
+            .send()
+
+    def remove(self, name: str):
+        pass
+
+    def check(self, name: str):
+        pass
+
+
+Socket(lambda socket, endpoint, args: Activity(socket, endpoint, args), '0.0.0.0', 8001).start_listening()

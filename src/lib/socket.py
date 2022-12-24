@@ -1,77 +1,54 @@
 from socket import *
-from threading import Thread, Semaphore
-HTTP_VERSION = "HTTP/1.1"
-response_strings = {
-    200: "200 OK",
-    401: "401 Unauthorized",
-    403: "403 Forbidden",
-    404: "404 Not Found"
-}
+from threading import Thread
+from queue import Queue
 
-semaphore = Semaphore(8)
+THREAD_POOL_SIZE = 16
+
 class Socket:
 
-    __endpoints: dict
-    __current_response: str
-
-    def __init__(self, endpoints, address = "0.0.0.0", port = 8000) -> None:
-        self.serverSocket = socket(AF_INET,SOCK_STREAM)
-        self.serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
-        self.serverSocket.bind((address, port))
-        self.serverSocket.listen(1)
-        self.HTTP_VERSION = "HTTP/1.1"
-        self.current_response = ""
-        self.__endpoints = endpoints
-        print('The server is ready to receive')
+    def __init__(self, controller, address, port) -> None:
+        self.server_socket = socket(AF_INET,SOCK_STREAM)
+        self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
+        self.server_socket.bind((address, port))
+        self.server_socket.listen(1)
+        self.controller = controller
+        self.job_pool = Queue()
+        self.init_threads()
+        print(f'The server is ready to receive on port:{port}')
 
     def start_listening(self):
-        count = 0
+        try:
+            while True:
+                socket, addr = self.server_socket.accept()
+                decoded_message = socket.recv(1024).decode()
+
+                endpoint, query = decoded_message.split()[1].split('?', 1)
+                args = dict(arg.split('=') for arg in query.split('&'))
+
+                self.job_pool.put((socket, endpoint, args))
+        except KeyboardInterrupt:
+            self.exit()
+
+    def init_threads(self):
+        self.threads = [Thread(target=self.worker_thread) for _ in range(THREAD_POOL_SIZE)]
+        
+        for t in self.threads:
+            t.start()
+
+    def worker_thread(self):
         while True:
-            connection_socket, addr = self.serverSocket.accept()
-            decoded_message = connection_socket.recv(1024).decode()
+            socket, endpoint, args = self.job_pool.get()
 
-            endpoint, query = decoded_message.split()[1].split('?', 1)
-            args = dict(arg.split('=') for arg in query.split('&'))
-            args['socket'] = connection_socket
-            args['semaphore'] = thread_exit
+            if socket == None:
+                return
 
-            self.initialize_response(200).add_response_header("Content-Type", "text/html").add_response_body(f"""{count}\n""").encode_current_response()
-            count += 1
-            args['response'] = self.current_response
-            self.current_response = ""
-            
-            print(semaphore._value)
-            semaphore.acquire()
-            x = Thread(target=self.__endpoints[endpoint], args=args.values())
-            x.start()
+            self.controller(socket, endpoint, args)
 
+    def exit(self):
+        for _ in range(THREAD_POOL_SIZE):
+            self.job_pool.put((None, None, None))
 
-    def initialize_response(self, status):
-        response_string = response_strings[status]
-        if response_string == None:
-            self.current_response += "-1 Invalid Status Code"
-        else:
-            self.current_response += f"{HTTP_VERSION}  {response_string}"
-        self.current_response += "\n"
-        return self
-
-    def add_response_header(self, key, value):
-        self.current_response += f"{key}: {value}\n"
-        return self
-    
-    def add_response_body(self, body):
-        self.current_response += f"\n{body}"
-        return self
-
-    def encode_current_response(self):
-        self.current_response = self.current_response.encode(encoding='iso-8859-1')
-        return self
-    
-    def send_response(self, connection_socket):
-        connection_socket.sendall(self.current_response)
-        connection_socket.close()
-        self.current_response = ""
-
-
-def thread_exit():
-    semaphore.release()
+        for t in self.threads:
+            t.join()
+        
+        self.server_socket.shutdown(SHUT_RDWR)

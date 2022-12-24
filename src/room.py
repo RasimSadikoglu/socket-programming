@@ -1,23 +1,34 @@
 from lib.socket import Socket
+from lib.controller import Controller
 from socket import *
 
-def add(name: str):
-    pass
+class Room(Controller):
 
-def remove(name: str):
-    pass
+    def __init__(self, socket, endpoint, args):
+        super().__init__(socket)
 
-def reserve(name: str, day: int, hour: int, duration: int):
-    pass
+        endpoints = {
+            '/add': self.add,
+            '/remove': self.remove,
+            '/reserve': self.reserve,
+            '/checkavailability': self.check_availability
+        }
 
-def check_availability(name: str, day: int):
-    pass
+        endpoints[endpoint](**args)
 
-endpoints = {
-    '/add': add,
-    '/remove': remove,
-    '/reserve': reserve,
-    '/checkavailability': check_availability
-}
+        self.exit()
 
-Socket(endpoints, '0.0.0.0', 8002).start_listening()
+        def add(name: str):
+            pass
+
+        def remove(name: str):
+            pass
+
+        def reserve(name: str, day: int, hour: int, duration: int):
+            pass
+
+        def check_availability(name: str, day: int):
+            pass
+
+
+Socket(lambda socket, endpoint, args: Room(socket, endpoint, args), '0.0.0.0', 8002).start_listening()
