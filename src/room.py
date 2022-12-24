@@ -1,4 +1,4 @@
-from lib.socket import Socket
+from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
 from activity_client import ActivityClient
