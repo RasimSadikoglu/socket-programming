@@ -1,12 +1,8 @@
 from Socket.lib import Socket
-import time, random
 from socket import *
 
-def add(name: str, socket: socket, semaphore, response: bytes):
-    time.sleep(random.random())
-    socket.sendall(response)
-    socket.close()
-    semaphore()
+def add(name: str):
+    pass
 
 def remove(name: str):
     pass
@@ -24,4 +20,4 @@ endpoints = {
     '/checkavailability': check_availability
 }
 
-Socket(endpoints, '0.0.0.0', 8000).start_listening()
+Socket(endpoints, '0.0.0.0', 8002).start_listening()
