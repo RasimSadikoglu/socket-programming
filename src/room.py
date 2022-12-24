@@ -1,4 +1,4 @@
-from Socket.lib import Socket
+from lib.socket import Socket
 from socket import *
 
 def add(name: str):

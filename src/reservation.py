@@ -1,4 +1,4 @@
-from Socket.lib import Socket
+from lib.socket import Socket
 from socket import *
 
 def reserve(room: str, activity: str, day: int, hour: int, duration: int):
