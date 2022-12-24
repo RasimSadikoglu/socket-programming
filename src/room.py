@@ -1,6 +1,7 @@
 from lib.socket import Socket
 from lib.controller import Controller
 from socket import *
+from activity_client import ActivityClient
 
 class Room(Controller):
 
@@ -18,17 +19,17 @@ class Room(Controller):
 
         self.exit()
 
-        def add(name: str):
-            pass
+    def add(self, name: str):
+        pass
 
-        def remove(name: str):
-            pass
+    def remove(self, name: str):
+        pass
 
-        def reserve(name: str, day: int, hour: int, duration: int):
-            pass
+    def reserve(self, name: str, day: int, hour: int, duration: int):
+        pass
 
-        def check_availability(name: str, day: int):
-            pass
+    def check_availability(self, name: str, day: int):
+        pass
 
 
-Socket(lambda socket, endpoint, args: Room(socket, endpoint, args), '0.0.0.0', 8002).start_listening()
+Socket('0.0.0.0', 8002, lambda socket, endpoint, args: Room(socket, endpoint, args)).start_listening()

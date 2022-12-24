@@ -6,7 +6,7 @@ THREAD_POOL_SIZE = 16
 
 class Socket:
 
-    def __init__(self, controller, address, port) -> None:
+    def __init__(self, address, port, controller) -> None:
         self.server_socket = socket(AF_INET,SOCK_STREAM)
         self.server_socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self.server_socket.bind((address, port))

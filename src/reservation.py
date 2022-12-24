@@ -17,14 +17,14 @@ class Reservation(Controller):
 
         self.exit()
 
-    def reserve(room: str, activity: str, day: int, hour: int, duration: int):
+    def reserve(self, room: str, activity: str, day: int, hour: int, duration: int):
         pass
 
-    def list_availability(room: str, day: int = 0):
+    def list_availability(self, room: str, day: int = 0):
         pass
 
-    def display(id: int):
+    def display(self, id: int):
         pass
 
 
-Socket(lambda socket, endpoint, args: Reservation(socket, endpoint, args), '0.0.0.0', 8000).start_listening()
+Socket('0.0.0.0', 8000, lambda socket, endpoint, args: Reservation(socket, endpoint, args)).start_listening()

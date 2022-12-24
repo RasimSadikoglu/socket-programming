@@ -31,4 +31,4 @@ class Activity(Controller):
         pass
 
 
-Socket(lambda socket, endpoint, args: Activity(socket, endpoint, args), '0.0.0.0', 8001).start_listening()
+Socket('0.0.0.0', 8001, lambda socket, endpoint, args: Activity(socket, endpoint, args)).start_listening()
