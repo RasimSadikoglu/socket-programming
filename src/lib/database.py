@@ -2,18 +2,18 @@ import redis
 from lib.singleton import Singleton
 
 class Database(metaclass=Singleton):
-    _database = None
+    __database = None
     def __init__(self):
-        self._database = redis.Redis(host='localhost', port=6379, db=0)
+        self.__database = redis.Redis(host='localhost', port=6379, db=0)
         print("Connected to Redis")
     
     def set(self, key, value) -> bool:
-        return self._database.setnx(key, value)
-    
+        return self.__database.set(key, value)
+
     def delete(self, key) -> bool:
-        return self._database.delete(key) > 0
+        return self.__database.delete(key) > 0
 
     def get(self, key):
-        self._database.get(key)
+        return self.__database.get(key)
 
 

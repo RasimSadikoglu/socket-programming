@@ -20,20 +20,16 @@ class Room(Controller):
 
         self.exit()
 
-    def add(self, name: str):
-        result = self.business.add(name)
-        self.send_json(*result)
+    def add(self, name = ""):
+        self.send_html(self.business.add(name))
 
+    def remove(self, name = ""):
+        self.send_html(self.business.remove(name))
 
-    def remove(self, name: str):
-        result = self.business.remove(name)
-        self.send_json(*result)
+    def reserve(self, name = "", day = 0, hour = 0, duration = 0):
+        self.send_html(self.business.reserve(name, int(day), int(hour), int(duration)))
 
-    def reserve(self, name: str, day: int, hour: int, duration: int):
-        result = self.business.reserve(name, day, hour, duration)
-
-    def check_availability(self, name: str, day: int):
-        result = self.business.check_availability(name, day)
-
+    def check_availability(self, name = "", day = 0):
+        self.send_html(self.business.check_availability(name, int(day)))
 
 Socket('0.0.0.0', 8002, lambda socket, endpoint, args: Room(socket, endpoint, args)).start_listening()

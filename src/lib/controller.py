@@ -1,8 +1,11 @@
 import json
 
+from lib.html_result import HTMLResult
+
 HTTP_VERSION = "HTTP/1.1"
 response_strings = {
     200: "200 OK",
+    400: "400 Bad Request",
     401: "401 Unauthorized",
     403: "403 Forbidden",
     404: "404 Not Found"
@@ -42,6 +45,13 @@ class Controller:
         self.initialize_response(status) \
             .add_header('Content-Type', 'application/json') \
             .add_body(json.dumps(body)) \
+            .encode() \
+            .send()
+
+    def send_html(self, response: HTMLResult):
+        self.initialize_response(response.status) \
+            .add_header('Content-Type', 'text/html') \
+            .add_body(f'<HTML><HEAD><TITLE>{response.title}</TITLE></HEAD><BODY>{response.body}</BODY></HTML>') \
             .encode() \
             .send()
 
