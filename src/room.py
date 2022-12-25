@@ -2,7 +2,6 @@ from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
 from business.room_business import RoomBusiness
-
 class Room(Controller):
 
     def __init__(self, socket, endpoint, args):
@@ -23,10 +22,12 @@ class Room(Controller):
 
     def add(self, name: str):
         result = self.business.add(name)
-        self.initialize_response(200 if result else 403).encode().send()
+        self.send_json(*result)
+
 
     def remove(self, name: str):
         result = self.business.remove(name)
+        self.send_json(*result)
 
     def reserve(self, name: str, day: int, hour: int, duration: int):
         result = self.business.reserve(name, day, hour, duration)

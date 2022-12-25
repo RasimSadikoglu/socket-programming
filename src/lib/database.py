@@ -10,8 +10,8 @@ class Database(metaclass=Singleton):
     def set(self, key, value) -> bool:
         return self._database.setnx(key, value)
     
-    def delete(self, key):
-        self._database.delete(key)
+    def delete(self, key) -> bool:
+        return self._database.delete(key) > 0
 
     def get(self, key):
         self._database.get(key)

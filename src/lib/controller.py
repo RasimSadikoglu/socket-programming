@@ -1,3 +1,5 @@
+import json
+
 HTTP_VERSION = "HTTP/1.1"
 response_strings = {
     200: "200 OK",
@@ -35,6 +37,13 @@ class Controller:
     
     def send(self):
         self.socket.sendall(self.current_response)
+
+    def send_json(self, status, body):
+        self.initialize_response(status) \
+            .add_header('Content-Type', 'application/json') \
+            .add_body(json.dumps(body)) \
+            .encode() \
+            .send()
 
     def exit(self):
         self.socket.close()

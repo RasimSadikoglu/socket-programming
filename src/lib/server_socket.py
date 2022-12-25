@@ -22,7 +22,11 @@ class Socket:
                 socket, addr = self.server_socket.accept()
                 decoded_message = socket.recv(1024).decode()
 
-                endpoint, query = decoded_message.split()[1].split('?', 1)
+                splitted_request = decoded_message.split()[1].split('?', 1)
+                if len(splitted_request) != 2:
+                    continue
+                endpoint, query = splitted_request
+
                 args = dict(arg.split('=') for arg in query.split('&'))
 
                 self.job_pool.put((socket, endpoint, args))
