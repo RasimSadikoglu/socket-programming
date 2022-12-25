@@ -16,4 +16,5 @@ class Database(metaclass=Singleton):
     def get(self, key):
         return self.__database.get(key)
 
-
+    def get_new_id(self):
+        return int(self.__database.incr('__reservation_id'))
