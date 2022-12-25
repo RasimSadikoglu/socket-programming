@@ -1,4 +1,6 @@
+from lib.database import Database
+
 class RoomBusiness:
     
     def add(self, name: str) -> bool:
-        pass
+        return Database().set(name, "")

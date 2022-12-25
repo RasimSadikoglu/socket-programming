@@ -23,6 +23,7 @@ class Room(Controller):
 
     def add(self, name: str):
         result = self.business.add(name)
+        self.initialize_response(200 if result else 403).encode().send()
 
     def remove(self, name: str):
         result = self.business.remove(name)

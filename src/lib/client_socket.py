@@ -11,6 +11,8 @@ class ClientSocket:
 
     def get_response(self):
         response = self.client_socket.recv(4096)
-        response.decode()
         self.client_socket.close()
-        return response
+        return self.parse_response(response.decode())
+    
+    def parse_response(self, response: str) -> bool:
+        return response.startswith("200")
