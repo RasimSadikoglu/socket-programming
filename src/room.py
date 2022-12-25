@@ -1,12 +1,14 @@
 from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
-from activity_client import ActivityClient
+from business.room_business import RoomBusiness
 
 class Room(Controller):
 
     def __init__(self, socket, endpoint, args):
         super().__init__(socket)
+
+        self.business = RoomBusiness()
 
         endpoints = {
             '/add': self.add,
@@ -20,16 +22,16 @@ class Room(Controller):
         self.exit()
 
     def add(self, name: str):
-        pass
+        result = self.business.add(name)
 
     def remove(self, name: str):
-        pass
+        result = self.business.remove(name)
 
     def reserve(self, name: str, day: int, hour: int, duration: int):
-        pass
+        result = self.business.reserve(name, day, hour, duration)
 
     def check_availability(self, name: str, day: int):
-        pass
+        result = self.business.check_availability(name, day)
 
 
 Socket('0.0.0.0', 8002, lambda socket, endpoint, args: Room(socket, endpoint, args)).start_listening()
