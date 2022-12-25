@@ -4,7 +4,7 @@ from lib.html_result import HTMLResult
 class RoomClient(ClientSocket):
     
     def __init__(self):
-        super().__init__('0.0.0.0', 8002)
+        super().__init__('0.0.0.0', 8081)
 
     def add(self, name: str) -> HTMLResult:
         self.send_request('POST', '/add', f'name={name}')

@@ -27,4 +27,4 @@ class Reservation(Controller):
     def display(self, id: int):
         pass
 
-Socket('0.0.0.0', 8000, lambda socket, endpoint, args: Reservation(socket, endpoint, args)).start_listening()
+Socket('0.0.0.0', 8080, lambda socket, endpoint, args: Reservation(socket, endpoint, args)).start_listening()
