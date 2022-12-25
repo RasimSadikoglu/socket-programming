@@ -22,7 +22,7 @@ class Controller:
         if response_string == None:
             self.current_response += "-1 Invalid Status Code"
         else:
-            self.current_response += f"{HTTP_VERSION}  {response_string}"
+            self.current_response += f"{HTTP_VERSION} {response_string}"
         self.current_response += "\n"
         return self
 

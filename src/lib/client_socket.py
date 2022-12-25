@@ -1,4 +1,6 @@
-import socket
+import socket, re
+
+from lib.html_result import HTMLResult
 
 class ClientSocket:
 
@@ -9,10 +11,12 @@ class ClientSocket:
     def send_request(self, method: str, endpoint: str, query: str):
         self.client_socket.send(f'{method} {endpoint}?{query} HTTP1.1'.encode(encoding='iso-8859-1'))
 
-    def get_response(self):
-        response = self.client_socket.recv(4096)
+    def get_HTML_response(self):
+        response = self.client_socket.recv(4096).decode()
         self.client_socket.close()
-        return self.parse_response(response.decode())
-    
-    def parse_response(self, response: str) -> bool:
-        return response.startswith("200")
+        
+        status = int(re.findall('HTTP/1.1 (\d+)', response)[0])
+        title = re.findall('<TITLE>(.*)</TITLE>', response)[0]
+        body = re.findall('<BODY>(.*)</BODY>', response)[0]
+
+        return HTMLResult(status, title, body)
