@@ -41,6 +41,6 @@ class ReservationBusiness:
     def display(self, id: int):
         reservation = Database().get(id)
         if reservation is None:
-            return HTMLResult(404, 'Error', 'No reservation is found with id {id}.')
+            return HTMLResult(404, 'Error', f'No reservation is found with id {id}.')
 
         return HTMLResult(200, 'Reservation Info', reservation.decode())

@@ -22,11 +22,14 @@ class Socket:
                 socket, addr = self.server_socket.accept()
                 decoded_message = socket.recv(1024).decode()
 
+                print(f'{"-" * 30}')
                 splitted_request = decoded_message.split()[1].split('?', 1)
                 if len(splitted_request) != 2:
+                    print(f'Unknown request: {splitted_request[0]}')
+                    print(f'Skipping...')
                     continue
-                endpoint, query = splitted_request
 
+                endpoint, query = splitted_request
                 args = dict(arg.split('=') for arg in query.split('&'))
 
                 self.job_pool.put((socket, endpoint, args))
@@ -45,8 +48,16 @@ class Socket:
 
             if socket == None:
                 return
+            
+            host, port = socket.getpeername()
+
+            print(f'Connection established. Host: {host}, Port:{port}')
+            print(f'Endpoint: {endpoint}')
+            print(f'Query: {args}')
 
             self.controller(socket, endpoint, args)
+
+            print(f'Connection terminated.')
 
     def exit(self):
         for _ in range(THREAD_POOL_SIZE):
