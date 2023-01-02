@@ -1,5 +1,4 @@
 from business.activity_business import ActivityBusiness
-from lib.html_result import HTMLResult
 from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
