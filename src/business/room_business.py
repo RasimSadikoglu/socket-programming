@@ -31,6 +31,8 @@ class RoomBusiness:
         return HTMLResult(200, 'Room Removed', f'Room with name "{name}" is successfully removed.')
     
     def reserve(self, name: str, day: int, hour: int, duration: int):
+        if Database().get(f'{name}_room') is None:
+            return HTMLResult(404, 'Error', f'Room with name "{name}" does not exist.')
         if not (1 <= day <= 7):
             return HTMLResult(400, 'Error', 'Day value should be between 1 and 7.')
         if not (9 <= hour <= 17):
@@ -39,8 +41,6 @@ class RoomBusiness:
             return HTMLResult(400, 'Error', 'Duration has to be positive.')
         if hour + duration > 18:
             return HTMLResult(403, 'Error', 'Reservations cannot be made after 18.00.')
-        if Database().get(f'{name}_room') is None:
-            return HTMLResult(404, 'Error', f'Room with name "{name}" does not exist.')
 
         availability = list(Database().get(f'{name}_room_day{day}').decode())
 
@@ -54,10 +54,10 @@ class RoomBusiness:
         return HTMLResult(200, 'Room Reserved', f'Room {name} is reserved on {DAYS[day - 1]} hours between {hour}.00 and {hour + duration}.00.')
 
     def check_availability(self, name: str, day: int):
-        if not (1 <= day <= 7):
-            return HTMLResult(400, 'Error', 'Day value should be between 1 and 7.')
         if Database().get(f'{name}_room') is None:
             return HTMLResult(404, 'Error', f'Room with name "{name}" does not exist.')
+        if not (1 <= day <= 7):
+            return HTMLResult(400, 'Error', 'Day value should be between 1 and 7.')
         
         availability = list(zip(Database().get(f'{name}_room_day{day}').decode(), range(9, 18)))
         availability = list(filter(lambda x: x[0] == '0', availability))

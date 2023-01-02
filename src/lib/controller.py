@@ -56,7 +56,11 @@ class Controller:
             .send()
 
     def send_unknown_request(self):
-        self.send_html(HTMLResult(404, 'Error', 'Unknown request.'))
+        self.send_html(HTMLResult(404, 'Error', '404 Not Found'))
+        self.exit()
+
+    def send_unknown_query(self):
+        self.send_html(HTMLResult(400, 'Error', 'One or many of the query arguments are unknown.'))
         self.exit()
 
     def exit(self):

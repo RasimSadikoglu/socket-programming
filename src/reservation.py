@@ -21,7 +21,11 @@ class Reservation(Controller):
             self.send_unknown_request()
             return
 
-        endpoints[endpoint](**args)
+        try:
+            endpoints[endpoint](**args)
+        except TypeError:
+            self.send_unknown_query()
+            return
 
         self.exit()
 
