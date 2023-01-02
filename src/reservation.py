@@ -30,4 +30,4 @@ class Reservation(Controller):
     def display(self, id = 0):
         self.send_html(self.business.display(int(id)))
 
-Socket('0.0.0.0', 8080, lambda socket, endpoint, args: Reservation(socket, endpoint, args)).start_listening()
+Socket('0.0.0.0', 8080, Reservation).start_listening()

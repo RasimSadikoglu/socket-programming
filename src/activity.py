@@ -29,4 +29,4 @@ class Activity(Controller):
     def check(self, name = ""):
         self.send_html(self.business.check(name))
 
-Socket('0.0.0.0', 8082, lambda socket, endpoint, args: Activity(socket, endpoint, args)).start_listening()
+Socket('0.0.0.0', 8082, Activity).start_listening()

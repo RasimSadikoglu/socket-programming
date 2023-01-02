@@ -32,4 +32,4 @@ class Room(Controller):
     def check_availability(self, name = "", day = 0):
         self.send_html(self.business.check_availability(name, int(day)))
 
-Socket('0.0.0.0', 8081, lambda socket, endpoint, args: Room(socket, endpoint, args)).start_listening()
+Socket('0.0.0.0', 8081, Room).start_listening()
