@@ -55,5 +55,9 @@ class Controller:
             .encode() \
             .send()
 
+    def send_unknown_request(self):
+        self.send_html(HTMLResult(404, 'Error', 'Unknown request.'))
+        self.exit()
+
     def exit(self):
         self.socket.close()

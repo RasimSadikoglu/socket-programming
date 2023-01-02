@@ -1,3 +1,4 @@
+from lib.html_result import HTMLResult
 from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
@@ -15,6 +16,10 @@ class Room(Controller):
             '/reserve': self.reserve,
             '/checkavailability': self.check_availability
         }
+
+        if endpoint not in endpoints:
+            self.send_unknown_request()
+            return
 
         endpoints[endpoint](**args)
 

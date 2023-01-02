@@ -1,5 +1,5 @@
 from business.reservation_business import ReservationBusiness
-from clients.room_client import RoomClient
+from lib.html_result import HTMLResult
 from lib.server_socket import Socket
 from lib.controller import Controller
 from socket import *
@@ -16,6 +16,10 @@ class Reservation(Controller):
             '/listavailability': self.list_availability,
             '/display': self.display
         }
+
+        if endpoint not in endpoints:
+            self.send_unknown_request()
+            return
 
         endpoints[endpoint](**args)
 

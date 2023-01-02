@@ -1,7 +1,6 @@
 from lib.database import Database
 from lib.html_result import HTMLResult
 
-
 class ActivityBusiness:
     def add(self, name: str):
         if name == "":

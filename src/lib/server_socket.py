@@ -24,13 +24,16 @@ class Socket:
 
                 print(f'{"-" * 30}')
                 splitted_request = decoded_message.split()[1].split('?', 1)
-                if len(splitted_request) != 2:
+                if len(splitted_request) > 2:
                     print(f'Unknown request: {splitted_request[0]}')
                     print(f'Skipping...')
                     continue
 
+                if len(splitted_request) == 1:
+                    splitted_request.append('')
+
                 endpoint, query = splitted_request
-                args = dict(arg.split('=') for arg in query.split('&'))
+                args = dict(arg.split('=') for arg in query.split('&')) if query != '' else dict()
 
                 self.job_pool.put((socket, endpoint, args))
         except KeyboardInterrupt:
