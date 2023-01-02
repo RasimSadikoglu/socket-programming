@@ -13,9 +13,22 @@ response_strings = {
 
 class Controller:
     
-    def __init__(self, socket):
+    def __init__(self, socket, endpoints, endpoint, args, business):
         self.socket = socket
         self.current_response = ""
+    
+        self.business = business()
+
+        try:
+            endpoints[endpoint](**args)
+        except KeyError as ke:
+            self.send_unknown_request()
+        except TypeError as te:
+            self.send_unknown_query(str(te))
+        except ValueError as ve:
+            self.send_key_error(str(ve))
+
+        self.exit()
 
     def initialize_response(self, status):
         response_string = response_strings[status]
@@ -57,11 +70,12 @@ class Controller:
 
     def send_unknown_request(self):
         self.send_html(HTMLResult(404, 'Error', '404 Not Found'))
-        self.exit()
 
-    def send_unknown_query(self):
-        self.send_html(HTMLResult(400, 'Error', 'One or many of the query arguments are unknown.'))
-        self.exit()
+    def send_unknown_query(self, error):
+        self.send_html(HTMLResult(400, 'Error', f'Unexpected query argument: {error}'))
+
+    def send_key_error(self, error):
+        self.send_html(HTMLResult(400, 'Error', f'Mismatched type error occured: {error}'))
 
     def exit(self):
         self.socket.close()

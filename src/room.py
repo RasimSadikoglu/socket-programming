@@ -6,10 +6,6 @@ from business.room_business import RoomBusiness
 class Room(Controller):
 
     def __init__(self, socket, endpoint, args):
-        super().__init__(socket)
-
-        self.business = RoomBusiness()
-
         endpoints = {
             '/add': self.add,
             '/remove': self.remove,
@@ -17,17 +13,7 @@ class Room(Controller):
             '/checkavailability': self.check_availability
         }
 
-        if endpoint not in endpoints:
-            self.send_unknown_request()
-            return
-
-        try:
-            endpoints[endpoint](**args)
-        except TypeError:
-            self.send_unknown_query()
-            return
-
-        self.exit()
+        super().__init__(socket, endpoints, endpoint, args, RoomBusiness)
 
     def add(self, name = ""):
         self.send_html(self.business.add(name))

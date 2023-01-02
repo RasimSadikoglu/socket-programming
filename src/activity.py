@@ -7,27 +7,13 @@ from socket import *
 class Activity(Controller):
 
     def __init__(self, socket, endpoint, args):
-        super().__init__(socket)
-
-        self.business = ActivityBusiness()
-
         endpoints = {
             '/add': self.add,
             '/remove': self.remove,
             '/check': self.check
         }
 
-        if endpoint not in endpoints:
-            self.send_unknown_request()
-            return
-
-        try:
-            endpoints[endpoint](**args)
-        except TypeError:
-            self.send_unknown_query()
-            return
-
-        self.exit()
+        super().__init__(socket, endpoints, endpoint, args, ActivityBusiness)
 
     def add(self, name = ""):
         self.send_html(self.business.add(name))
